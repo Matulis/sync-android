@@ -100,6 +100,186 @@ public class QueryValidatorTest {
     }
 
     @Test
+    public void normalizesMultipleEvenNOTs() {
+        // query - { "pet" : { "$not" : { "$not" : { "$eq" : "cat" } } } }
+        Map<String, Object> eqCat = new HashMap<String, Object>();
+        eqCat.put("$eq", "cat");
+        Map<String, Object> notEqCat = new HashMap<String, Object>();
+        notEqCat.put("$not", eqCat);
+        Map<String, Object> notNotEqCat = new HashMap<String, Object>();
+        notNotEqCat.put("$not", notEqCat);
+        Map<String, Object> query = new HashMap<String, Object>();
+        query.put("pet", notNotEqCat);
+        Map<String, Object> normalizedQuery = QueryValidator.normaliseAndValidateQuery(query);
+
+        // normalized query - { "$and" : [ { "pet" : { "$eq" : "cat" } } ] }
+        Map<String, Object> c1op = new HashMap<String, Object>();
+        c1op.put("$eq", "cat");
+        Map<String, Object> c1 = new HashMap<String, Object>();
+        c1.put("pet", c1op);
+        Map<String, Object> expected = new LinkedHashMap<String, Object>();
+        expected.put("$and", Arrays.<Object>asList(c1));
+        assertThat(normalizedQuery, is(expected));
+    }
+
+    @Test
+    public void normalizesSingleNe() {
+        // query - { "pet" : { "$ne" : "cat" } }
+        Map<String, Object> neCat = new HashMap<String, Object>();
+        neCat.put("$ne", "cat");
+        Map<String, Object> query = new HashMap<String, Object>();
+        query.put("pet", neCat);
+        Map<String, Object> normalizedQuery = QueryValidator.normaliseAndValidateQuery(query);
+
+        // normalized query - { "$and" : [ { "pet" : { "$not" : { "$eq" : "cat" } } } ] }
+        Map<String, Object> c1op = new HashMap<String, Object>();
+        c1op.put("$eq", "cat");
+        Map<String, Object> notC1op = new HashMap<String, Object>();
+        notC1op.put("$not", c1op);
+        Map<String, Object> c1 = new HashMap<String, Object>();
+        c1.put("pet", notC1op);
+        Map<String, Object> expected = new LinkedHashMap<String, Object>();
+        expected.put("$and", Arrays.<Object>asList(c1));
+        assertThat(normalizedQuery, is(expected));
+    }
+
+    @Test
+    public void normalizesMultipleEvenNOTsWithNe() {
+        // query - { "pet" : { "$not" : { "$not" : { "$ne" : "cat" } } } }
+        Map<String, Object> neCat = new HashMap<String, Object>();
+        neCat.put("$ne", "cat");
+        Map<String, Object> notNeCat = new HashMap<String, Object>();
+        notNeCat.put("$not", neCat);
+        Map<String, Object> notNotNeCat = new HashMap<String, Object>();
+        notNotNeCat.put("$not", notNeCat);
+        Map<String, Object> query = new HashMap<String, Object>();
+        query.put("pet", notNotNeCat);
+        Map<String, Object> normalizedQuery = QueryValidator.normaliseAndValidateQuery(query);
+
+        // normalized query - { "$and" : [ { "pet" : { "$not" : { "$eq" : "cat" } } } ] }
+        Map<String, Object> c1op = new HashMap<String, Object>();
+        c1op.put("$eq", "cat");
+        Map<String, Object> notC1op = new HashMap<String, Object>();
+        notC1op.put("$not", c1op);
+        Map<String, Object> c1 = new HashMap<String, Object>();
+        c1.put("pet", notC1op);
+        Map<String, Object> expected = new LinkedHashMap<String, Object>();
+        expected.put("$and", Arrays.<Object>asList(c1));
+        assertThat(normalizedQuery, is(expected));
+    }
+
+    @Test
+    public void normalizesMultipleOddNOTs() {
+        // query - { "pet" : { "$not" : { "$not" : { "$not" : { "$eq" : "cat" } } } } }
+        Map<String, Object> eqCat = new HashMap<String, Object>();
+        eqCat.put("$eq", "cat");
+        Map<String, Object> notEqCat = new HashMap<String, Object>();
+        notEqCat.put("$not", eqCat);
+        Map<String, Object> notNotEqCat = new HashMap<String, Object>();
+        notNotEqCat.put("$not", notEqCat);
+        Map<String, Object> notNotNotEqCat = new HashMap<String, Object>();
+        notNotNotEqCat.put("$not", notNotEqCat);
+        Map<String, Object> query = new HashMap<String, Object>();
+        query.put("pet", notNotNotEqCat);
+        Map<String, Object> normalizedQuery = QueryValidator.normaliseAndValidateQuery(query);
+
+        // normalized query - { "$and" : [ { "pet" : { "$not" : { "$eq" : "cat" } } } ] }
+        Map<String, Object> c1op = new HashMap<String, Object>();
+        c1op.put("$eq", "cat");
+        Map<String, Object> notC1op = new HashMap<String, Object>();
+        notC1op.put("$not", c1op);
+        Map<String, Object> c1 = new HashMap<String, Object>();
+        c1.put("pet", notC1op);
+        Map<String, Object> expected = new LinkedHashMap<String, Object>();
+        expected.put("$and", Arrays.<Object>asList(c1));
+        assertThat(normalizedQuery, is(expected));
+    }
+
+    @Test
+    public void normalizesMultipleOddNOTsWithNe() {
+        // query - { "pet" : { "$not" : { "$not" : { "$not" : { "$ne" : "cat" } } } } }
+        Map<String, Object> neCat = new HashMap<String, Object>();
+        neCat.put("$ne", "cat");
+        Map<String, Object> notNeCat = new HashMap<String, Object>();
+        notNeCat.put("$not", neCat);
+        Map<String, Object> notNotNeCat = new HashMap<String, Object>();
+        notNotNeCat.put("$not", notNeCat);
+        Map<String, Object> notNotNotNeCat = new HashMap<String, Object>();
+        notNotNotNeCat.put("$not", notNotNeCat);
+        Map<String, Object> query = new HashMap<String, Object>();
+        query.put("pet", notNotNotNeCat);
+        Map<String, Object> normalizedQuery = QueryValidator.normaliseAndValidateQuery(query);
+
+        // normalized query - { "$and" : [ { "pet" : { "$eq" : "cat" } } ] }
+        Map<String, Object> c1op = new HashMap<String, Object>();
+        c1op.put("$eq", "cat");
+        Map<String, Object> c1 = new HashMap<String, Object>();
+        c1.put("pet", c1op);
+        Map<String, Object> expected = new LinkedHashMap<String, Object>();
+        expected.put("$and", Arrays.<Object>asList(c1));
+        assertThat(normalizedQuery, is(expected));
+    }
+
+    @Test
+    public void normalizesMultiLevelQueryWithMultipleNOTs() {
+        // query - { "$or" : [ { "name" : { "$eq" : "mike" } },
+        //                     { "$and" : [ { "pet" : { "$not" : { "$not" :
+        //                                  { "$not" : { "$eq" : "cat" } } } } },
+        //                                  { "age" : { "$eq" : 12 } } ] } ] }
+        Map<String, Object> eqMike = new HashMap<String, Object>();
+        eqMike.put("$eq", "mike");
+        Map<String, Object> nameOp = new HashMap<String, Object>();
+        nameOp.put("name", eqMike);
+
+        Map<String, Object> eqCat = new HashMap<String, Object>();
+        eqCat.put("$eq", "cat");
+        Map<String, Object> notEqCat = new HashMap<String, Object>();
+        notEqCat.put("$not", eqCat);
+        Map<String, Object> notNotEqCat = new HashMap<String, Object>();
+        notNotEqCat.put("$not", notEqCat);
+        Map<String, Object> notNotNotEqCat = new HashMap<String, Object>();
+        notNotNotEqCat.put("$not", notNotEqCat);
+        Map<String, Object> petOp = new HashMap<String, Object>();
+        petOp.put("pet", notNotNotEqCat);
+
+        Map<String, Object> eq12 = new HashMap<String, Object>();
+        eq12.put("$eq", 12);
+        Map<String, Object> ageOp = new HashMap<String, Object>();
+        ageOp.put("age", eq12);
+
+        Map<String, Object> andOp = new HashMap<String, Object>();
+        andOp.put("$and", Arrays.<Object>asList(petOp, ageOp));
+
+        Map<String, Object> query = new HashMap<String, Object>();
+        query.put("$or", Arrays.<Object>asList(nameOp, andOp));
+        Map<String, Object> normalizedQuery = QueryValidator.normaliseAndValidateQuery(query);
+
+        // normalized query - { "$or" : [ { "name" : { "$eq" : "mike" } },
+        //                                { "$and" : [ { "pet" : { "$not" : { "$eq" : "cat" } } },
+        //                                             { "age" : { "$eq" : 12 } } ] } ] }
+        Map<String, Object> c1op = new HashMap<String, Object>();
+        c1op.put("$eq", "mike");
+        Map<String, Object> c1 = new HashMap<String, Object>();
+        c1.put("name", c1op);
+        Map<String, Object> c2SubOp1 = new HashMap<String, Object>();
+        c2SubOp1.put("$eq", "cat");
+        Map<String, Object> c2NotSubOp1 = new HashMap<String, Object>();
+        c2NotSubOp1.put("$not", c2SubOp1);
+        Map<String, Object> c2Sub1 = new HashMap<String, Object>();
+        c2Sub1.put("pet", c2NotSubOp1);
+        Map<String, Object> c2SubOp2 = new HashMap<String, Object>();
+        c2SubOp2.put("$eq", 12);
+        Map<String, Object> c2Sub2 = new HashMap<String, Object>();
+        c2Sub2.put("age", c2SubOp2);
+        Map<String, Object> c2 = new HashMap<String, Object>();
+        c2.put("$and", Arrays.<Object>asList(c2Sub1, c2Sub2));
+
+        Map<String, Object> expected = new LinkedHashMap<String, Object>();
+        expected.put("$or", Arrays.<Object>asList(c1, c2));
+        assertThat(normalizedQuery, is(expected));
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     public void checkForInvalidValues() {
         Map<String, Object> query = new HashMap<String, Object>();
