@@ -134,7 +134,9 @@ class QueryValidator {
             //  or     { "$or": [ ... ] } -- we don't
             Object predicate;
             String fieldName;
-            // if fieldClause isn't a Map, we don't know what to do so pass it back
+            // if this isn't a map, we don't know what to do so add the clause
+            // to the accumulator to be dealt with later as part of the final selector
+            // validation.
             if (fieldClause instanceof Map && !((Map) fieldClause).isEmpty()) {
                 Map<String, Object> fieldClauseMap = (Map<String, Object>) fieldClause;
                 fieldName = (String) fieldClauseMap.keySet().toArray()[0];
@@ -172,7 +174,9 @@ class QueryValidator {
         for (Object fieldClause: clause) {
             Object predicate;
             String fieldName;
-            // if fieldClause isn't a Map, we don't know what to do so pass it back
+            // if this isn't a dictionary, we don't know what to do so add the clause
+            // to the accumulator to be dealt with later as part of the final selector
+            // validation.
             if (fieldClause instanceof Map && !((Map) fieldClause).isEmpty()) {
                 Map<String, Object> fieldClauseMap = (Map<String, Object>) fieldClause;
                 fieldName = (String) fieldClauseMap.keySet().toArray()[0];
@@ -187,7 +191,9 @@ class QueryValidator {
             } else {
                 String operator;
                 Object operatorPredicate;
-                // if predicate isn't a Map, we don't know what to do so pass it back
+                // if this isn't a dictionary, we don't know what to do so add the clause
+                // to the accumulator to be dealt with later as part of the final selector
+                // validation.
                 if (predicate instanceof Map && !((Map) predicate).isEmpty()) {
                     Map<String, Object> predicateMap = (Map<String, Object>) predicate;
                     operator = (String) predicateMap.keySet().toArray()[0];
