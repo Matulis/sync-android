@@ -174,7 +174,7 @@ class QueryValidator {
         for (Object fieldClause: clause) {
             Object predicate;
             String fieldName;
-            // if this isn't a dictionary, we don't know what to do so add the clause
+            // if this isn't a map, we don't know what to do so add the clause
             // to the accumulator to be dealt with later as part of the final selector
             // validation.
             if (fieldClause instanceof Map && !((Map) fieldClause).isEmpty()) {
@@ -191,7 +191,7 @@ class QueryValidator {
             } else {
                 String operator;
                 Object operatorPredicate;
-                // if this isn't a dictionary, we don't know what to do so add the clause
+                // if this isn't a map, we don't know what to do so add the clause
                 // to the accumulator to be dealt with later as part of the final selector
                 // validation.
                 if (predicate instanceof Map && !((Map) predicate).isEmpty()) {
