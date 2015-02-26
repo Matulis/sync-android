@@ -24,13 +24,7 @@ import java.util.logging.Logger;
  *  This class contains common validation options for the
  *  two different implementations of query.
  */
-class QueryValidator {
-
-    private static final String AND = "$and";
-    private static final String OR = "$or";
-    private static final String EQ = "$eq";
-    private static final String NOT = "$not";
-    private static final String NE = "$ne";
+class QueryValidator implements QueryConstants {
 
     // notOperatorMap is used for operator shorthand processing.
     // Presently only $ne is supported.  More to come soon...

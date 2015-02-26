@@ -77,15 +77,11 @@ import java.util.logging.Logger;
  *
  *  These basic patterns can be composed into more complicate structures.
  */
-class UnindexedMatcher {
+class UnindexedMatcher implements QueryConstants {
 
     private ChildrenQueryNode root;
 
     private static final Logger logger = Logger.getLogger(UnindexedMatcher.class.getName());
-
-    private static final String AND = "$and";
-    private static final String OR = "$or";
-    private static final String NOT = "$not";
 
     /**
      *  Return a new initialised matcher.

@@ -92,12 +92,7 @@ import java.util.logging.Logger;
  *
  *  These basic patterns can be composed into more complicate structures.
  */
-class QuerySqlTranslator {
-
-    private static final String AND = "$and";
-    private static final String OR = "$or";
-    private static final String NOT = "$not";
-    private static final String EXISTS = "$exists";
+class QuerySqlTranslator implements QueryConstants {
 
     private static final Logger logger = Logger.getLogger(QuerySqlTranslator.class.getName());
 
